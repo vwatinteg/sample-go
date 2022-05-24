@@ -442,7 +442,7 @@
 							"alb.ingress.kubernetes.io/listen-ports": "[{\"HTTP\": 80}, {\"HTTPS\":443}]",
 							"alb.ingress.kubernetes.io/scheme": "public",
 							"alb.ingress.kubernetes.io/ssl-redirect": "443",
-							"alb.ingress.kubernetes.io/subnets": "subnet-00b5b7449760120e4, subnet-07b0954bb3a6410c8"
+							"alb.ingress.kubernetes.io/subnets": "subnet-060fd5b984ec1bcaa, subnet-0c8fd820a35cf8915"
 						},
 						"deploy_application": true
 					}
