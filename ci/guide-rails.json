@@ -33,7 +33,6 @@
 				"name": "Build",
 				"segment_type": "build",
 				"publish_attributes": {
-					"publish": true,
 					"docker_images": [
 						{
 							"repository": "exp-go-k8s",
@@ -192,12 +191,12 @@
 				"source_code_available": true,
 				"tasks": [
 					{
-						"name": "exp-go-k8s",
+						"name": "exp-go",
 						"steps": [
 							{
 								"name": "Env",
 								"definition": "Env",
-								"command": "env\n \nfunction dnsCheck() { \n    appURL=$1 \n    statusCode=$(curl -s -L -o /dev/null -w \"%{http_code}\" ${appURL} || true)\n\n    count=40\n    while [ $count -ge 0 ]; do \n        if [ $statusCode -ne 200 ]; then \n            echo \"Waiting for DNS record to be available...\"\n            sleep 11\n            count=$(expr $count - 1)\n            statusCode=$(curl -L -s -o /dev/null -w \"%{http_code}\" ${appURL} || true)\n            echo \"Received status code: ${statusCode} from ${appURL}\"\n        else \n             break\n         fi\n    done\n\n    if [ $statusCode -ne 200 ]; then\n         echo \"Failed to connect to application on DNS...\"\n         exit 1\n    fi\n}\n\necho \"Testing the east DNS\"\ndnsCheck \"http://((application.name))-((segment.name))-((application.branch)).guide-rails.io\"\n\necho \"Testing the west DNS\"\ndnsCheck \"http://((application.name))-((segment.name))-((application.branch))-west.guide-rails.io\"",
+								"command": "function dnsCheck() { \n    appURL=$1 \n    statusCode=$(curl -s -L -o /dev/null -w \"%{http_code}\" ${appURL} || true)\n\n    count=40\n    while [ $count -ge 0 ]; do \n        if [ $statusCode -ne 200 ]; then \n            echo \"Waiting for DNS record to be available...\"\n            sleep 11\n            count=$(expr $count - 1)\n            statusCode=$(curl -L -s -o /dev/null -w \"%{http_code}\" ${appURL} || true)\n            echo \"Received status code: ${statusCode} from ${appURL}\"\n        else \n             break\n         fi\n    done\n\n    if [ $statusCode -ne 200 ]; then\n         echo \"Failed to connect to application on DNS...\"\n         exit 1\n    fi\n}\n\necho \"Testing the east DNS\"\ndnsCheck \"http://((application.name))-((segment.name))-((application.branch)).guide-rails.io\"\n\necho \"Testing the west DNS\"\ndnsCheck \"http://((application.name))-((segment.name))-((application.branch))-west.guide-rails.io\"",
 								"properties": null
 							}
 						],
@@ -206,16 +205,16 @@
 				],
 				"k8s_instance_groups": [
 					{
-						"tool_config_alias_id": "5e7bdf98-dc21-4969-4bfa-0c719dd7844d",
-						"docker_registry_alias_id": "0c4a1a24-d650-4f1b-5a34-e4307deae00d",
-						"name": "((application.name))-1",
+						"tool_config_alias_id": "5b96d325-65d1-4b50-7b7b-90b4974d7624",
+						"docker_registry_alias_id": "f5aeaf85-5985-472c-43d3-6752af7385a4",
+						"name": "((application.name))",
 						"cluster_name": "",
 						"namespace": "((application.name))-((application.branch))",
 						"replicas": 1,
 						"containers": [
 							{
 								"name": "((application.name))",
-								"image": "guide-rails/exp-go-k8s:((application.version))",
+								"image": "guide-rails/exp-go-k8s",
 								"ports": [
 									{
 										"name": "endpoint2",
@@ -320,372 +319,7 @@
 								}
 							}
 						],
-						"deploy_application": true,
-						"helm_packages": [
-							{
-								"name": "rabbitmq",
-								"type": 2,
-								"helmPackages": [
-									{
-										"pkg_source": 3,
-										"chart_name": "rabbitmq",
-										"repository_url": "https://charts.bitnami.com/bitnami"
-									}
-								]
-							}
-						]
-					},
-					{
-						"tool_config_alias_id": "2c99a7d3-76d8-40be-4d71-f7811bc9a338",
-						"docker_registry_alias_id": "0c4a1a24-d650-4f1b-5a34-e4307deae00d",
-						"name": "((application.name))-west",
-						"cluster_name": "",
-						"namespace": "((application.name))-((application.branch))",
-						"replicas": 1,
-						"containers": [
-							{
-								"name": "((application.name))",
-								"image": "guide-rails/exp-go-k8s:((application.version))",
-								"ports": [
-									{
-										"name": "endpoint1",
-										"hostPort": 3000,
-										"containerPort": 3000,
-										"protocol": "TCP"
-									}
-								],
-								"resources": {},
-								"imagePullPolicy": "Always",
-								"securityContext": {
-									"privileged": true
-								}
-							}
-						],
-						"autoscaling": {
-							"metadata": {
-								"creationTimestamp": null
-							},
-							"spec": {
-								"scaleTargetRef": {
-									"kind": "",
-									"name": ""
-								},
-								"minReplicas": 3,
-								"maxReplicas": 4,
-								"metrics": [
-									{
-										"type": "Resource",
-										"resource": {
-											"name": "cpu",
-											"target": {
-												"type": "AverageValue",
-												"averageValue": "70"
-											}
-										}
-									},
-									{
-										"type": "Resource",
-										"resource": {
-											"name": "memory",
-											"target": {
-												"type": "AverageValue",
-												"averageValue": "40"
-											}
-										}
-									}
-								]
-							},
-							"status": {
-								"currentReplicas": 0,
-								"desiredReplicas": 0,
-								"currentMetrics": null,
-								"conditions": null
-							}
-						},
-						"ingress_enabled": true,
-						"ingress": {
-							"metadata": {
-								"creationTimestamp": null
-							},
-							"spec": {
-								"rules": [
-									{
-										"host": "((application.name))-((segment.name))-((application.branch))-west.guide-rails.io",
-										"http": {
-											"paths": [
-												{
-													"path": "/",
-													"backend": {
-														"servicePort": "80"
-													}
-												}
-											]
-										}
-									}
-								]
-							},
-							"status": {
-								"loadBalancer": {}
-							}
-						},
-						"load_balancing_type": 2,
-						"dns_hosted_zone": "guide-rails.io",
-						"service_name": "((application.name))-((application.shortsha))",
-						"alb_ingress_controller_annotations": {
-							"alb.ingress.kubernetes.io/certificate-arn": "arn:aws:iam::818130157321:server-certificate/guide-rails-wildcard-20220726",
-							"alb.ingress.kubernetes.io/healthcheck-path": "/",
-							"alb.ingress.kubernetes.io/healthcheck-port": "traffic-port",
-							"alb.ingress.kubernetes.io/listen-ports": "[{\"HTTP\": 80}, {\"HTTPS\":443}]",
-							"alb.ingress.kubernetes.io/scheme": "internal",
-							"alb.ingress.kubernetes.io/ssl-redirect": "443",
-							"alb.ingress.kubernetes.io/subnets": "subnet-05add8dba3c11e25c, subnet-0e374f1f6a79a5009"
-						},
-						"volumes": [
-							{
-								"persistent": true,
-								"size": "1Gi",
-								"mount_path": "/data/play",
-								"attributes": {
-									"ReadWriteMany": "true"
-								}
-							}
-						],
-						"deploy_application": true,
-						"properties": [
-							{
-								"name": "gr.k8s.efs.fsid",
-								"value": "fs-043dcd345ead79d9d"
-							}
-						]
-					}
-				],
-				"deployment_target": 2
-			},
-			{
-				"name": "Isolation",
-				"segment_type": "isolation",
-				"run_after": [
-					"Build"
-				],
-				"exit_actions": {},
-				"properties": [
-					{
-						"name": "POSTGRES_PASSWORD",
-						"value": "password",
-						"type": "string"
-					},
-					{
-						"name": "PGDATA",
-						"value": "/data/pgdata",
-						"type": "string"
-					},
-					{
-						"name": "gr.helm.wait.timeout",
-						"value": "2m",
-						"type": "string"
-					}
-				],
-				"deployment_strategy": {
-					"canaries": 1,
-					"max_in_flight": 1,
-					"canary_watch_time": "5000-30000",
-					"update_watch_time": "5000-30000",
-					"serial": false
-				},
-				"application_init": {},
-				"instance_tags": [
-					{
-						"name": "application.name",
-						"value": "((application.name))"
-					}
-				],
-				"tasks": [
-					{
-						"name": "HC",
-						"steps": [
-							{
-								"name": "Verify connection",
-								"definition": "Verify connection",
-								"command": "env\n\nfunction connectionCheck() {\n    host=$1\n    port=$2\n    statusCode=$(nc -zv ${host} ${port} || true)\n\n    count=40\n    while [ $count -ge 0 ]; do \n        if [ $statusCode -ne 0 ]; then \n            echo \"Waiting for connectivity to be available...\"\n            sleep 10\n            count=$(expr $count - 1)\n            statusCode=$(nc -zv ${host} ${port} || true)\n            echo \"No connection yet to host ${host} on port ${port}\"\n        else \n             break\n         fi\n    done\n\n    if [ $statusCode -ne 0 ]; then\n         echo \"Failed to connect to application on port...\"\n         exit 1\n    fi\n}\n\n",
-								"properties": null
-							}
-						],
-						"docker_options": {}
-					}
-				],
-				"k8s_instance_groups": [
-					{
-						"tool_config_alias_id": "2c99a7d3-76d8-40be-4d71-f7811bc9a338",
-						"docker_registry_alias_id": "0c4a1a24-d650-4f1b-5a34-e4307deae00d",
-						"name": "((application.name))",
-						"cluster_name": "",
-						"namespace": "((application.name))-((application.branch))",
-						"replicas": 1,
-						"containers": [
-							{
-								"name": "((application.name))",
-								"image": "dockerhub-proxy/library/postgres:latest",
-								"ports": [
-									{
-										"name": "db",
-										"hostPort": 5432,
-										"containerPort": 5432,
-										"protocol": "TCP"
-									}
-								],
-								"resources": {},
-								"imagePullPolicy": "IfNotPresent",
-								"securityContext": {
-									"privileged": false
-								}
-							}
-						],
-						"autoscaling": {
-							"metadata": {
-								"creationTimestamp": null
-							},
-							"spec": {
-								"scaleTargetRef": {
-									"kind": "",
-									"name": ""
-								},
-								"maxReplicas": 0
-							},
-							"status": {
-								"currentReplicas": 0,
-								"desiredReplicas": 0,
-								"currentMetrics": null,
-								"conditions": null
-							}
-						},
-						"ingress_enabled": true,
-						"ingress": {
-							"metadata": {
-								"creationTimestamp": null
-							},
-							"spec": {
-								"rules": [
-									{
-										"host": "((application.name))-((segment.name))-((application.branch)).guide-rails.io"
-									}
-								]
-							},
-							"status": {
-								"loadBalancer": {}
-							}
-						},
-						"load_balancing_type": 1,
-						"dns_zone_type": "public",
-						"service_name": "((application.name))-((application.shortsha))",
-						"alb_ingress_controller_annotations": {
-							"service.beta.kubernetes.io/aws-load-balancer-nlb-target-type": "ip",
-							"service.beta.kubernetes.io/aws-load-balancer-subnets": "subnet-0e374f1f6a79a5009,subnet-05add8dba3c11e25c"
-						},
-						"volumes": [
-							{
-								"persistent": true,
-								"size": "1Gi",
-								"mount_path": "/data",
-								"attributes": {
-									"ReadWriteOnce": "true"
-								}
-							}
-						],
-						"type": "StatefulSet",
-						"stateful_set_spec": {
-							"replicas": 2,
-							"pod_management_policy": 1,
-							"update_strategy": 1,
-							"headless_service": true
-						},
-						"deploy_application": true,
-						"helm_packages": [
-							{
-								"name": "custom",
-								"type": 2,
-								"helmPackages": [
-									{
-										"pkg_source": 1,
-										"charts_folder": "chart",
-										"chart_name": "exp-go-k8s-test3"
-									}
-								]
-							},
-							{
-								"name": "mysql",
-								"type": 2,
-								"helmPackages": [
-									{
-										"pkg_source": 3,
-										"chart_name": "mysql",
-										"chart_version": "8.8.32",
-										"repository_url": "https://charts.bitnami.com/bitnami"
-									}
-								]
-							}
-						]
-					}
-				],
-				"deployment_target": 2
-			},
-			{
-				"name": "Cron",
-				"segment_type": "isolation",
-				"run_after": [
-					"Build"
-				],
-				"exit_actions": {},
-				"deployment_strategy": {
-					"canaries": 1,
-					"max_in_flight": 1,
-					"canary_watch_time": "5000-30000",
-					"update_watch_time": "5000-30000",
-					"serial": false
-				},
-				"application_init": {},
-				"instance_tags": [
-					{
-						"name": "application.name",
-						"value": "((application.name))"
-					}
-				],
-				"k8s_instance_groups": [
-					{
-						"tool_config_alias_id": "5e7bdf98-dc21-4969-4bfa-0c719dd7844d",
-						"docker_registry_alias_id": "0c4a1a24-d650-4f1b-5a34-e4307deae00d",
-						"name": "((application.name))",
-						"cluster_name": "",
-						"namespace": "((application.name))-((application.branch))",
-						"replicas": 1,
-						"containers": [
-							{
-								"name": "((application.name))",
-								"image": "dockerhub-proxy/library/busybox:latest",
-								"command": [
-									"/bin/sh",
-									"-ec",
-									"date; echo \"Hello, World!\""
-								],
-								"resources": {},
-								"imagePullPolicy": "IfNotPresent",
-								"securityContext": {
-									"privileged": false
-								}
-							}
-						],
-						"service_name": "((application.name))-((application.shortsha))",
-						"type": "CronJob",
-						"deploy_application": true,
-						"cron_jobs_spec": {
-							"cron_jobs_schedule": {
-								"minutes": "*/10",
-								"hours": "*",
-								"day_of_the_month": "*",
-								"month": "*",
-								"day_of_the_week": "*"
-							},
-							"concurrency_policy": 1
-						}
+						"deploy_application": true
 					}
 				],
 				"deployment_target": 2
@@ -695,8 +329,7 @@
 				"segment_type": "production",
 				"persistent": true,
 				"run_after": [
-					"Integration",
-					"Isolation"
+					"Integration"
 				],
 				"exit_actions": {},
 				"deployment_strategy": {
@@ -720,8 +353,8 @@
 				},
 				"k8s_instance_groups": [
 					{
-						"tool_config_alias_id": "2c99a7d3-76d8-40be-4d71-f7811bc9a338",
-						"docker_registry_alias_id": "0c4a1a24-d650-4f1b-5a34-e4307deae00d",
+						"tool_config_alias_id": "5b96d325-65d1-4b50-7b7b-90b4974d7624",
+						"docker_registry_alias_id": "51c90656-c776-4dcf-5355-2be8d18a7cba",
 						"name": "((application.name))",
 						"cluster_name": "",
 						"namespace": "((application.name))",
@@ -729,7 +362,7 @@
 						"containers": [
 							{
 								"name": "((application.name))",
-								"image": "guide-rails/exp-go-k8s:((application.version))",
+								"image": "guide-rails/exp-go-k8s",
 								"ports": [
 									{
 										"name": "endpoint-1",
@@ -809,7 +442,7 @@
 							"alb.ingress.kubernetes.io/listen-ports": "[{\"HTTP\": 80}, {\"HTTPS\":443}]",
 							"alb.ingress.kubernetes.io/scheme": "public",
 							"alb.ingress.kubernetes.io/ssl-redirect": "443",
-							"alb.ingress.kubernetes.io/subnets": "subnet-07b5638c601772ae6, subnet-0e2334d4d4099bfcd"
+							"alb.ingress.kubernetes.io/subnets": "subnet-00b5b7449760120e4, subnet-07b0954bb3a6410c8"
 						},
 						"deploy_application": true
 					}
