@@ -1,0 +1,17 @@
+{{- $chart_name := .Chart.Name }}
+{{- $chart_version := .Chart.Version | replace "+" "_" }}
+{{- $release_name := .Release.Name }}
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $release_name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    chart: "{{ $chart_name }}-{{ $chart_version }}"
+    app: banana
+spec:
+  selector:
+    app: banana
+  ports:
+    - port: 5678 # Default port for image	

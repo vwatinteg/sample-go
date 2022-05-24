@@ -1,0 +1,4 @@
+imageCredentials:
+  registry: docker.guide-rails.io:443
+  email: admin@calculi.com
+  username: admin

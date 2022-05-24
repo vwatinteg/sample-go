@@ -1,0 +1,4 @@
+apiVersion: v1
+name: exp-go-k8s-test3
+description: Test Chart
+version: 1.12.23-CAT-204
