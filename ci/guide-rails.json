@@ -308,7 +308,7 @@
 							"alb.ingress.kubernetes.io/listen-ports": "[{\"HTTP\": 80}, {\"HTTPS\":443}]",
 							"alb.ingress.kubernetes.io/scheme": "internal",
 							"alb.ingress.kubernetes.io/ssl-redirect": "443",
-							"alb.ingress.kubernetes.io/subnets": "subnet-05af39613bc5e3b92,subnet-07b0954bb3a6410c8"
+							"alb.ingress.kubernetes.io/subnets": "subnet-0847a7386e84051a8,subnet-05af39613bc5e3b92"
 						},
 						"volumes": [
 							{
