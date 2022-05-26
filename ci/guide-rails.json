@@ -215,7 +215,7 @@
 						"containers": [
 							{
 								"name": "apigee-runtime",
-								"image": "google/apigee-runtime",
+								"image": "google/apigee-runtime:1.5.10",
 								"ports": [
 									{
 										"name": "endpoint2",
