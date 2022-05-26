@@ -207,7 +207,7 @@
 				"k8s_instance_groups": [
 					{
 						"tool_config_alias_id": "5b96d325-65d1-4b50-7b7b-90b4974d7624",
-						"docker_registry_alias_id": "51c90656-c776-4dcf-5355-2be8d18a7cba",
+						"docker_registry_alias_id": "fead084b-01c1-4cb6-53b1-d139d85e3261",
 						"name": "((application.name))",
 						"cluster_name": "",
 						"namespace": "((application.name))-((application.branch))",
@@ -215,7 +215,7 @@
 						"containers": [
 							{
 								"name": "apigee-runtime",
-								"image": "library/google/apigee-runtime",
+								"image": "google/apigee-runtime",
 								"ports": [
 									{
 										"name": "endpoint2",
