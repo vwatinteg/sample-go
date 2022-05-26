@@ -214,7 +214,7 @@
 						"replicas": 1,
 						"containers": [
 							{
-								"name": "google/apigee-runtime",
+								"name": "apigee-runtime",
 								"image": "google/apigee-runtime",
 								"ports": [
 									{
