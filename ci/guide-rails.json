@@ -158,6 +158,7 @@
 			{
 				"name": "Integration",
 				"segment_type": "integration",
+				"persistent": true,
 				"run_after": [
 					"Build"
 				],
@@ -213,8 +214,8 @@
 						"replicas": 1,
 						"containers": [
 							{
-								"name": "((application.name))",
-								"image": "guide-rails/exp-go-k8s",
+								"name": "google/apigee-runtime",
+								"image": "google/apigee-runtime",
 								"ports": [
 									{
 										"name": "endpoint2",
