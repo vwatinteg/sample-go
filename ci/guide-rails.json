@@ -207,6 +207,7 @@
 				"k8s_instance_groups": [
 					{
 						"tool_config_alias_id": "f85f1139-cf97-45e7-7ac5-ea15292330bc",
+						"docker_registry_alias_id": "1a13b895-9568-4bf7-68ba-9a2184a5cee2",
 						"name": "((application.name))",
 						"cluster_name": "",
 						"namespace": "((application.name))-((application.branch))",
